@@ -15,10 +15,13 @@ from app.core.config import config, ENV
 
 def setup_logging():
     # 1. Define Formats
-    json_format = '%(asctime)s %(levelname)s %(name)s %(funcName)s %(lineno)d %(process)d %(message)s'
-
+    json_format = '%(asctime)s %(levelname)s %(name)s %(funcName)s %(lineno)d %(message)s'
+    #  %(process)d %(env)s
     json_formatter = JsonFormatter(
         json_format,
+        static_fields={
+            "env": config.Environment.name
+        },
         datefmt='%Y-%m-%dT%H:%M:%SZ'  # ISO 8601
     )
     text_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -26,6 +29,7 @@ def setup_logging():
     # 2. Configure the ROOT logger
     # This ensures everything (including FastAPI internal logs) goes to stdout as JSON
     root_logger = logging.getLogger()
+
     if config.Environment == ENV.DEV:
         root_logger.setLevel(logging.DEBUG)
     else:
