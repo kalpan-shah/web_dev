@@ -1,15 +1,20 @@
 # Imports
 from fastapi import FastAPI
 from app.api.v1.router import api_router
-from app.api.v1.endpoints import posts
+from app.core.logger import setup_logging
+from app.core.config import config
+
+# Initialize the logging config
+setup_logging()
+
 
 # create app with factory
 def create_app() -> FastAPI:
-    app = FastAPI(title="Todo API")
+    _app = FastAPI(title=config.APP_NAME)
 
-    app.include_router(api_router, prefix="/api/v1")
+    _app.include_router(api_router, prefix=config.API_V1_STR)
 
-    return app
+    return _app
 
 
 # Script

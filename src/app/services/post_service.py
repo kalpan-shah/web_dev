@@ -6,14 +6,20 @@
 @version:       1.0.0 
 """
 # bussiness logic
+import logging
 from typing import List
 from datetime import datetime as dt
 from datetime import UTC
 from uuid import uuid4, UUID
 from app.schema.post import Post, PostCreate
 
+# Init logger
+logger = logging.getLogger("posts")
+
+
 # fake db - temp
 POSTS_DB = []
+
 
 # creating post
 async def create_post(data: PostCreate) -> Post:
@@ -25,11 +31,15 @@ async def create_post(data: PostCreate) -> Post:
     )
 
     POSTS_DB.append(post)
+    logger.info(f"Created post")
     return post
 
+
 async def get_posts() -> List[Post]:
+    logger.debug(f"Retrieving posts")
     print(POSTS_DB)
     return POSTS_DB
+
 
 async def get_post(post_id: UUID) -> Post | None:
     for post in POSTS_DB:
@@ -39,9 +49,8 @@ async def get_post(post_id: UUID) -> Post | None:
 
 
 async def delete_post(post_id: UUID) -> None:
-    
     global POSTS_DB
     POSTS_DB = [
         p for p in POSTS_DB if str(p.id) != str(post_id)
     ]
-
+    logger.info(f"Deleted post")
