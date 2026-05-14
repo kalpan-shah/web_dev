@@ -1,16 +1,17 @@
 # Todo APP - Template 
-Last Updated: April 22, 2023
+Last Updated: May 14, 2026
 
 ### Setup
-1. (Recommended)Create Virtual Environment
-2. Install Poetry
-3. Install requirements
-
-### Working Directory 
-`cd src`
+1. Install uv
+2. Install requirements
+    ```bash
+    cd src
+    uv sync
+    ```
+3. Rename the .env.template to .env and update variables accordingly
 
 ### Run
-`uvicorn app.main:app --reload --reload-dir ./app`
+`uv run uvicorn app.main:app --reload --reload-dir ./app`
 
 ### Run Tests
 `pytest`

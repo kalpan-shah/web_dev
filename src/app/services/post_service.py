@@ -1,9 +1,9 @@
-""" 
+"""
 @file:          services/post_service.py
 @description:   CRUD operations for posts
 @date:          26 March 2026
 @author:        Kalpan Shah
-@version:       1.0.0 
+@version:       1.0.0
 """
 # bussiness logic
 import logging
@@ -11,46 +11,44 @@ from typing import List
 from datetime import datetime as dt
 from datetime import UTC
 from uuid import uuid4, UUID
-from app.schema.post import Post, PostCreate
+
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, delete
+from app.models.post import Post
+
+from app.schema.post import PostCreate
 
 # Init logger
 logger = logging.getLogger("posts")
 
 
-# fake db - temp
-POSTS_DB = []
-
-
 # creating post
-async def create_post(data: PostCreate) -> Post:
-    post = Post(
-        id=uuid4(),
-        title=data.title,
-        content=data.content,
-        created_at=dt.now(UTC)
-    )
+async def create_post(db: AsyncSession,data: PostCreate) -> Post:
+    post = Post(**data.model_dump())
 
-    POSTS_DB.append(post)
+    db.add(post)
+    await db.commit()
+    await db.refresh(post)
     logger.info(f"Created post")
+    logger.debug(post)
     return post
 
 
-async def get_posts() -> List[Post]:
+async def get_posts(db: AsyncSession) -> List[Post]:
     logger.debug(f"Retrieving posts")
-    print(POSTS_DB)
-    return POSTS_DB
+    _stmt = select(Post)
+    result = await db.execute(_stmt)
+    return result.scalars().all()
 
 
-async def get_post(post_id: UUID) -> Post | None:
-    for post in POSTS_DB:
-        if str(post.id) == str(post_id):
-            return post
-    return None
+async def get_post(db: AsyncSession, post_id: UUID) -> Post | None:
+    _stmt = select(Post).where(Post.id == post_id)
+    result = await db.execute(_stmt)
+    return result.scalar_one_or_none()
 
 
-async def delete_post(post_id: UUID) -> None:
-    global POSTS_DB
-    POSTS_DB = [
-        p for p in POSTS_DB if str(p.id) != str(post_id)
-    ]
+async def delete_post(db: AsyncSession,post_id: UUID) -> None:
+    _stmt = delete(Post).where(Post.id == post_id)
+    await db.execute(_stmt)
+    await db.commit()
     logger.info(f"Deleted post")

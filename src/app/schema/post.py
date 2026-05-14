@@ -1,4 +1,4 @@
-""" 
+"""
 @file:          schema/post.py
 @description:   for data validation - Data Contracts
 @date:          26 March 2026

@@ -10,7 +10,7 @@ import logging
 import sys
 from pythonjsonlogger.json import JsonFormatter
 
-from app.core.config import config, ENV
+from app.core.config import base_settings, ENV
 
 
 def setup_logging():
@@ -20,7 +20,7 @@ def setup_logging():
     json_formatter = JsonFormatter(
         json_format,
         static_fields={
-            "env": config.Environment.name
+            "env": base_settings.Environment.name
         },
         datefmt='%Y-%m-%dT%H:%M:%SZ'  # ISO 8601
     )
@@ -30,7 +30,7 @@ def setup_logging():
     # This ensures everything (including FastAPI internal logs) goes to stdout as JSON
     root_logger = logging.getLogger()
 
-    if config.Environment == ENV.DEV:
+    if base_settings.Environment == ENV.DEV:
         root_logger.setLevel(logging.DEBUG)
     else:
         root_logger.setLevel(logging.INFO)
