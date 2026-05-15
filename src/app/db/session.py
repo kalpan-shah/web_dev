@@ -9,7 +9,7 @@
 from typing import AsyncGenerator
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from app.core.config import base_settings
+from app.core.config import base_settings, ENV
 
 # Declare the base class for our models
 class Base(DeclarativeBase):
@@ -24,7 +24,7 @@ engine = create_async_engine(
 # Create the async session factory
 AsyncSessionLocal = async_sessionmaker(
     engine,
-    expires_on_commit=False,  # Prevents session from expiring after commit
+    expire_on_commit=False,  # Prevents session from expiring after commit
 )
 
 

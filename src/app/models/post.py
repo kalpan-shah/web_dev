@@ -10,7 +10,7 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String, Text, DateTime # Importing necessary SQLAlchemy types
 from datetime import datetime as dt
-from datetime import UTC
+from datetime import timezone
 from uuid import uuid4
 from sqlalchemy.dialects.postgresql import UUID # Importing UUID type for PostgreSQL
 
@@ -26,7 +26,7 @@ class Post(Base):
     )
     title: Mapped[str] = mapped_column(String)
     content: Mapped[str] = mapped_column(String)
-    created_at: Mapped[dt] = mapped_column(DateTime, default=dt.now(UTC))  # Automatically set the creation time
+    created_at: Mapped[dt] = mapped_column(DateTime, default=dt.now())  # Automatically set the creation time
 
     def __repr__(self):
         return f"<Post Title={self.title}\n\n>{self.content[:20]}...>"
