@@ -2,7 +2,7 @@
 @file:          api/v1/endpoints/users.py
 @description:   API Endpoints to manage users
 @date:          19 March 2026
-@last modified: 19 May 2026
+@last modified: 20 May 2026
 @author:        Kalpan Shah
 @version:       1.0.0
 """
@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.schema.user import UserResponse, UserCreate
 from app.services import user_service
+from auth.service import generate_access_token
 
 user_router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -38,3 +39,7 @@ async def list_users(db: AsyncSession=Depends(get_db)):
 @user_router.get("/{user_id}", response_model=UserResponse)
 async def get_user(user_id: UUID, db: AsyncSession=Depends(get_db)):
     return await user_service.get_user_by_id(db, user_id)
+
+@user_router.post("/token")
+async def get_access_token(user_creds: dict, db: AsyncSession=Depends(get_db)):
+    return await generate_access_token(db, user_creds)
