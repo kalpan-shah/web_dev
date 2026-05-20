@@ -7,7 +7,7 @@
 @version:       1.0.0
 """
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, Text, DateTime # Importing necessary SQLAlchemy types
+from sqlalchemy import String, Text, DateTime, func # Importing necessary SQLAlchemy types
 from datetime import datetime as dt
 from datetime import timezone
 from uuid import uuid4
@@ -28,8 +28,8 @@ class User(Base):
     lname: Mapped[str | None] = mapped_column(String)
     email: Mapped[str] = mapped_column(String, unique=True, index=True)
     hashed_pss: Mapped[str] = mapped_column(String)
-    created_at: Mapped[dt] = mapped_column(DateTime) # server_default=func.now()
-    last_accessed: Mapped[dt | None] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[dt] = mapped_column(DateTime, server_default=func.now())
+    last_accessed: Mapped[dt | None] = mapped_column(DateTime, onupdate=func.now())
 
     def __repr__(self):
         return f"<User username={self.username} email={self.email}>"
