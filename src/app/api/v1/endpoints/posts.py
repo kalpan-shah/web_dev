@@ -15,26 +15,26 @@ from app.db.session import get_db
 from app.schema.post import Post, PostCreate
 from app.services import post_service
 
-router = APIRouter(prefix="/posts", tags=["Posts"])
+post_router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
-@router.post("/", response_model=Post)
+@post_router.post("/", response_model=Post)
 async def create_post(data: PostCreate, db: AsyncSession=Depends(get_db)):
     return await post_service.create_post(db, data)
 
 
-@router.get("/", response_model=List[Post])
+@post_router.get("/", response_model=List[Post])
 async def list_posts(db: AsyncSession=Depends(get_db)):
     return await post_service.get_posts(db)
 
 
-@router.get("/{post_id}", response_model=Post)
+@post_router.get("/{post_id}", response_model=Post)
 async def get_post(post_id: UUID, db: AsyncSession=Depends(get_db)):
     # check for post if None raise the relevant exception or return accordingly
     return await post_service.get_post(db, post_id)
 
 
-@router.delete("/{post_id}", response_model=Post)
+@post_router.delete("/{post_id}", response_model=Post)
 async def remove_post(post_id: UUID, db: AsyncSession=Depends(get_db)):
     # check if post exists and remove
     await post_service.delete_post(db, post_id)
