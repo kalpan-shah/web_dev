@@ -5,9 +5,9 @@
 @author:        Kalpan Shah
 @version:       1.0.0
 """
-from pwdlib import PaswordHash
+from pwdlib import PasswordHash
 
-password_hasher = PaswordHash.recommended()
+password_hasher = PasswordHash.recommended()
 
 def get_password_hash(password: str) -> str:
     """ Hash the clean password and return the hashed string """
