@@ -18,7 +18,7 @@ class ENV(Enum):
 
 class Settings(BaseSettings):
     # 1. Base Settings
-    Environment: ENV = ENV.DEV
+    Environment: ENV
     APP_NAME: str = "My Todo App"
     API_V1_STR: str = "/api/v1"
 

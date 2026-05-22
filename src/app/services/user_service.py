@@ -17,7 +17,7 @@ from sqlalchemy import select, delete, update
 
 # Init logger
 logger = logging.getLogger("users")
-
+ 
 async def get_users(db: AsyncSession, offset: int=0, limit:int=10) -> List[User]:
     _stmt = select(User).offset(offset).limit(limit)
     result = await db.execute(_stmt)

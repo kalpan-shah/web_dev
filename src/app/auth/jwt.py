@@ -6,10 +6,14 @@
 @author:        Kalpan Shah
 @version:       1.0.0
 """
+import logging
 from jwt import encode, decode, ExpiredSignatureError, InvalidTokenError
 from datetime import datetime as dt
 from datetime import timedelta, UTC
 from app.core.config import base_settings
+
+logger = logging.getLogger("auth")
+
 
 def sign_jwt(user_email: str) -> dict:
     """
@@ -25,7 +29,7 @@ def sign_jwt(user_email: str) -> dict:
     _expire = dt.now(UTC) + timedelta(minutes=base_settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     _payload = {
         "email": user_email,
-        "exp": int(_expire)
+        "exp": _expire
     }
 
     return encode(
@@ -53,10 +57,14 @@ def decode_jwt(token: str) -> str | None:
         return decoded_token["email"]
     except KeyError:
         # the token doesn't contain the user email
+        logger.error("Empty Token: Email key missing")
         return None
     except ExpiredSignatureError:
         # the exp value is in the past, i.e. token expired
+        logger.error("Expired Token")
+
         return None
     except InvalidTokenError:
         # unable to decode the token, signature failed to match
+        logger.error("Invalid Token")
         return None

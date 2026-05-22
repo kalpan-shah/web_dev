@@ -5,7 +5,8 @@
 @author:        Kalpan Shah
 @version:       1.0.0
 """
-from pydantic import BaseModel, EmailStr, Field
+from typing import Any
+from pydantic import BaseModel, EmailStr, Field, model_validator
 from datetime import datetime
 from uuid import UUID
 
@@ -35,6 +36,21 @@ class UserResponse(UserBase):
     class Config:
         # Pydantic v2 syntax to allow reading from SQLAlchemy ORM models
         from_attributes = True
+
+class UserLogin(BaseModel):
+    """Schema for user login"""
+
+    username: str = Field(None, min_length=3, max_length=50)
+    email: EmailStr = None
+    password: str = Field(..., min_length=8)
+
+    @model_validator(mode="before")
+    @classmethod
+    def check_username_or_email(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            if data.get("username") or data.get("email"):
+                return data
+        raise ValueError("Either email or username must be provided")
 
 class TokenResponse(BaseModel):
     """

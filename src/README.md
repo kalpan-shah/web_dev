@@ -15,3 +15,9 @@ Last Updated: May 14, 2026
 
 ### Run Tests
 `pytest`
+
+### Data Migrations
+- Note: PostgreSQL Only and Not yet tested
+
+`pg_dump -Fc -v -d "SOURCE_DB_CONN_STRING" | pg_restore -v --no-owner --no-privileges -d "TARGET_DB_CONN_STRING"
+`

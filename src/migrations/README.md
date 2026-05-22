@@ -16,6 +16,7 @@ Always log applied schema modifications in the ledger below.
 | :--- | :--- | :--- | :--- | :--- |
 | 2026-05-14 | `b97800b75bf8` | Initial schema setup (`Posts`) | Pending | Base migration file. |
 | 2026-05-15 | `b97800b75bf8` | Initial schema setup (`Posts`) | Up | Base migration Applied |
+| 2026-05-22 | `9cf743877585` | Added Users Table (`Posts`) | Up | User table added |
 
 
 
