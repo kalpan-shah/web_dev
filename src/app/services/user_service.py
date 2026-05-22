@@ -39,6 +39,9 @@ async def get_user_by_id(db: AsyncSession, uid: UUID) -> User | None:
     return result.scalar_one_or_none()
 
 async def create_new_user(db: AsyncSession, user: UserCreate) -> User:
+    # TODO: check if user already exists by passing the username or email
+
+    # raise relvant exception 
     hashed_pss = get_password_hash(user.password)
     new_user = User(
         username=user.username,

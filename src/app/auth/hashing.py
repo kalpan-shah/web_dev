@@ -13,6 +13,6 @@ def get_password_hash(password: str) -> str:
     """ Hash the clean password and return the hashed string """
     return password_hasher.hash(password)
 
-def verify_passord(password: str, hashed_password: str):
+def verify_password(password: str, hashed_password: str):
     """ Verify the raw password against the hashed pss saved in db """
     return password_hasher.verify(password, hashed_password)
