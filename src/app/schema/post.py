@@ -25,4 +25,5 @@ class Post(PostCreate):
         Post Info Model
     """
     id: UUID
+    user_id: UUID
     created_at: datetime

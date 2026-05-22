@@ -8,7 +8,7 @@
 """
 # Mapped - column type, mapped_column - constraints and options
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, Text, DateTime # Importing necessary SQLAlchemy types
+from sqlalchemy import String, ForeignKey, DateTime # Importing necessary SQLAlchemy types
 from datetime import datetime as dt
 from datetime import timezone
 from uuid import uuid4
@@ -24,6 +24,7 @@ class Post(Base):
         primary_key=True,
         default=uuid4  # Automatically generate a UUID for new posts
     )
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
     title: Mapped[str] = mapped_column(String)
     content: Mapped[str] = mapped_column(String)
     created_at: Mapped[dt] = mapped_column(DateTime, default=dt.now())  # Automatically set the creation time
