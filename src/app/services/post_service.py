@@ -23,9 +23,9 @@ logger = logging.getLogger("posts")
 
 
 # creating post
-async def create_post(db: AsyncSession,data: PostCreate) -> Post:
+async def create_post(db: AsyncSession, data: PostCreate, user_id: UUID) -> Post:
     post = Post(**data.model_dump())
-
+    post.user_id = user_id
     db.add(post)
     await db.commit()
     await db.refresh(post)
@@ -34,9 +34,9 @@ async def create_post(db: AsyncSession,data: PostCreate) -> Post:
     return post
 
 
-async def get_posts(db: AsyncSession) -> List[Post]:
+async def get_posts(db: AsyncSession, user_id: UUID) -> List[Post]:
     logger.debug(f"Retrieving posts")
-    _stmt = select(Post)
+    _stmt = select(Post).where(Post.user_id == user_id)
     result = await db.execute(_stmt)
     return result.scalars().all()
 

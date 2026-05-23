@@ -29,22 +29,31 @@ async def register_user(data: UserCreate, db: AsyncSession=Depends(get_db), user
         return await user_service.create_new_user(db, data)
 
 @user_router.delete("/{user_id}")
-async def delete_user(user_id: UUID, db: AsyncSession=Depends(get_db)):
+async def delete_user(user_id: UUID, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
+    if not user:
+        # TODO: add the required data validation and raise error accordingly
+        pass
     return await user_service.delete_user(db, user_id)
 
 @user_router.delete("/")
-async def delete_users(user_ids: List[UUID], db: AsyncSession=Depends(get_db)):
+async def delete_users(user_ids: List[UUID], db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
+    if not user:
+        # TODO: add the required data validation and raise error accordingly
+        pass
     return await user_service.delete_users(db, user_ids)
 
 @user_router.get("/", response_model=List[UserResponse])
 async def list_users(db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
     if not user:
-        pass
+        # TODO: add the required data validation and raise error accordingly
+       pass
     # TODO: Update the func to do pagination
     return await user_service.get_users(db)
 
 @user_router.get("/{user_id}", response_model=UserResponse)
-async def get_user(user_id: UUID, db: AsyncSession=Depends(get_db)):
+async def get_user(user_id: UUID, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
+    if not user:        # TODO: add the required data validation and raise error accordingly
+        pass
     return await user_service.get_user_by_id(db, user_id)
 
 @user_router.post("/token")
