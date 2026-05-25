@@ -9,7 +9,7 @@ from app.db.session import get_db
 
 from app.core.config import base_settings, ENV
 
-base_settings.Environment = ENV.TEST
+base_settings.Environment = ENV.TEST 
 
 # Create the async engine
 test_engine = create_async_engine(
@@ -62,3 +62,26 @@ async def client(db_session):
 
     # Clean up the override after the individual test finishes
     app.dependency_overrides.clear()
+
+# Create a default test user
+test_user_data = { 
+    "email": "user_001@mailbox.com",
+    "password": "Random@123"
+}
+
+
+@pytest_asyncio.fixture(scope="function")
+async def authorized_client(client):
+    """Fetches an access token for the default test user and stores it in the client headers."""
+    
+    res = await client.post("/api/v1/users/token", json=test_user_data)
+
+    assert res.status_code == 200, f"Failed to login: {res.text}"
+
+    header = {"Bearer": res.json()["access_token"] }
+
+    client.headers.update(header)
+
+    yield client
+
+    client.headers.pop("Bearer", None)

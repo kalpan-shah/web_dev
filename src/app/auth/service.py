@@ -9,6 +9,7 @@ import logging
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status, Depends, Header
 from app.services import user_service
+from app.core.exceptions import InvalidUserException
 from app.auth.jwt import sign_jwt, decode_jwt
 from app.auth.hashing import verify_password
 from app.models.user import User
@@ -28,8 +29,9 @@ async def generate_access_token(db: AsyncSession, user_creds: UserLogin) -> dict
 
     if _user is None:
         logger.debug(f"User Not Found: {user_creds.email or user_creds.username}")
+        logger.warning("Unknown user attempted to log in")
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"User with creds: {user_creds.email or user_creds.username} not Found"
         )
 
@@ -47,7 +49,7 @@ async def generate_access_token(db: AsyncSession, user_creds: UserLogin) -> dict
 
 # region helper function
 
-def get_token(Bearer: str=Header(default=None)): 
+def get_token(Bearer: str=Header(default=None)):
     if not Bearer:
         logger.error("Missing Token Bearer")
         raise HTTPException(
@@ -60,7 +62,6 @@ def get_token(Bearer: str=Header(default=None)):
 # endregion
 
 async def get_current_user(db: AsyncSession=Depends(get_db), token: str=Depends(get_token)) -> User:
-
     _email = decode_jwt(token)
 
     if _email is None:
@@ -69,6 +70,7 @@ async def get_current_user(db: AsyncSession=Depends(get_db), token: str=Depends(
             detail="Could not validate token"
         )
 
-    return await user_service.get_user_by_email(db, _email)
-
-
+    current_user = await user_service.get_user_by_email(db, _email)
+    if not current_user:
+        raise InvalidUserException()
+    return current_user

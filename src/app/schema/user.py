@@ -6,7 +6,7 @@
 @version:       1.0.0
 """
 from typing import Any
-from pydantic import BaseModel, EmailStr, Field, model_validator
+from pydantic import BaseModel, EmailStr, Field, model_validator, ConfigDict
 from datetime import datetime
 from uuid import UUID
 
@@ -16,8 +16,8 @@ class UserBase(BaseModel):
     """
     username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
-    fname: str
-    lname: str
+    fname: str = ""
+    lname: str = ""
 
 class UserCreate(UserBase):
     """
@@ -33,9 +33,7 @@ class UserResponse(UserBase):
     created_at: datetime
     # last_accessed: datetime | None = None # Uncomment if you want to expose this too
 
-    class Config:
-        # Pydantic v2 syntax to allow reading from SQLAlchemy ORM models
-        from_attributes = True
+    model_config = ConfigDict(from_attributes = True)
 
 class UserLogin(BaseModel):
     """Schema for user login"""

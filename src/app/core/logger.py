@@ -61,3 +61,5 @@ def setup_logging():
 
     # Initialize specific service files
     add_service_file_handler("posts", "posts.log")
+    add_service_file_handler("users", "users.log")
+    add_service_file_handler("auth", "auth.log")

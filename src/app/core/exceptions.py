@@ -53,8 +53,20 @@ class InvalidCredentialsException(BaseAppException):
         )
 
 
+class InvalidUserException(BaseAppException):
+    STATUS_CODE = status.HTTP_401_UNAUTHORIZED
+    DEFAULT_DETAIL = "User account has been deleted or disabled."
+
+
 # region AUTHORIZATION EXCEPTIONS
 
 class UnauthorizedException(BaseAppException):
     STATUS_CODE = status.HTTP_403_FORBIDDEN
     DEFAULT_DETAIL = "You do not have permission to perform this action."
+
+
+# region POST-RELATED EXCEPTIONS
+
+class PostNotFoundException(BaseAppException):
+    STATUS_CODE = status.HTTP_404_NOT_FOUND
+    DEFAULT_DETAIL = "Post not found."
