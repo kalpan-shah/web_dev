@@ -1,0 +1,10 @@
+from httpx import AsyncClient, ASGITransport
+from app.main import app
+
+import pytest
+
+@pytest.mark.asyncio
+async def test_health(client):
+    res = await client.get("/api/v1/health")
+    assert res.status_code == 200
+    assert res.json() == {"status": "probably okay"}
