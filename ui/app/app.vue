@@ -15,7 +15,7 @@
         
         <!-- TODO: Update with out github repo url -->
         <UButton
-        to="https://github.com/nuxt-ui-templates/starter"
+        to="https://github.com/kalpan-shah/web_dev"
         target="_blank"
         icon="i-simple-icons-github"
         aria-label="GitHub"
@@ -23,6 +23,13 @@
         variant="ghost"
         />
         <!-- TODO: Logout button -->
+         <UButton
+          to="/loggedout"
+          icon="i-heroicons-arrow-right-on-box"
+          aria-label="Logout"
+          color="neutral"
+          variant="ghost"
+        />
         <!-- Will display a you have been logged out message
         and then in 7 seconds will redirect to the login page  
         -->
@@ -37,13 +44,13 @@
       <NuxtPage />
     </UMain>
 
-    <USeparator icon="i-heroicons-fire" />
+    <!-- <USeparator icon="i-heroicons-fire" /> -->
 
     <UFooter>
       <template #left>
         <!-- TODO: Update name with github profile hyperlink -->
         <p class="text-sm text-muted">
-          Built with Love❤️ By Kalpan Shah • © {{ new Date().getFullYear() }}
+          Built with Love❤️ By <NuxtLink to="https://github.com/kalpan-shah" target="_blank" class="underline">Kalpan Shah</NuxtLink> • © {{ new Date().getFullYear() }}
         </p>
       </template>
 
