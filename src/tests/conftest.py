@@ -18,7 +18,7 @@ from app.db.session import get_db
 
 from app.core.config import base_settings, ENV
 
-base_settings.Environment = ENV.TEST 
+base_settings.Environment = ENV.TEST
 
 # Create the async engine
 test_engine = create_async_engine(
@@ -33,7 +33,7 @@ AsyncTestingSessionLocal = async_sessionmaker(
 )
 
 # Create a default test user
-test_user_data = { 
+test_user_data = {
     "email": "user_001@mailbox.com",
     "password": "Random@123"
 }
@@ -44,24 +44,21 @@ async def setup_test_user():
     """Creates a default test user before any tests run and cleans up after all tests finish."""
     # Load the session
     async with AsyncTestingSessionLocal() as session:
-        from app.schema.user import UserCreate 
+        from app.schema.user import UserCreate
         from app.services import user_service
-        
+        from app.core.exceptions import EmailAlreadyExistsException
         test_user = UserCreate(
             username=test_user_data["email"].split("@")[0],
             email=test_user_data["email"],
             password=test_user_data["password"]
         )
-        # Create the user using the service layer (handles hashing, etc.)
-        await user_service.create_user(session, test_user)
-        print("Test user created")
-             
-    yield
+        try:
+            # Create the user using the service layer (handles hashing, etc.)
+            await user_service.create_new_user(session, test_user)
+            print("Test user created")
+        except EmailAlreadyExistsException:
+            print("Test user already exists, skipping creation")
 
-    # Cleanup after all tests (optional but recommended)
-    async with AsyncTestingSessionLocal() as session:
-        await user_service.delete_user_by_email(session, test_user_data["email"])
-        print("Test user cleaned up")
 
 @pytest_asyncio.fixture(scope="function")
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
@@ -109,7 +106,7 @@ async def client(db_session):
 @pytest_asyncio.fixture(scope="function")
 async def authorized_client(client):
     """Fetches an access token for the default test user and stores it in the client headers."""
-    
+
     res = await client.post("/api/v1/users/token", json=test_user_data)
 
     assert res.status_code == 200, f"Failed to login: {res.text}"

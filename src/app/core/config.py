@@ -96,7 +96,7 @@ class Settings(BaseSettings):
         user = values.get("DB_USER")
         password = values.get("DB_PASSWORD")
         host = values.get("DB_HOST")
-        port = int(values.get("DB_PORT", "0"))
+        port = int(values.get("DB_PORT") or 0)
         name = values.get("DB_NAME")
 
         if not all([user, password, host, name]):
