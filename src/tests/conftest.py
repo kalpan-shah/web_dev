@@ -1,3 +1,12 @@
+"""
+@file:          tests/conftest.py
+@description:   Pytest fixtures for isolated database sessions and HTTP client setup with dynamic dependency overrides
+@date:          21 April 2026
+@last modified:   28 May 2026
+@author:        Kalpan Shah
+@version:       1.0.0
+"""
+
 from typing import AsyncGenerator
 
 import pytest_asyncio
