@@ -4,33 +4,61 @@ on:
   push:
     branches: [main, develop]
     # paths:
-    #   - 'src/**'  # make sure to only run if the backend src is changed
-    # Todo: Uncomment if this workflow works
+    #   - 'src/**'
   pull_request:
     branches: [main, develop]
 
 jobs:
-  pytest-job:
+  pytest:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
       - name: Check out code
         uses: actions/checkout@v5
 
-      # Setup uv 
       - name: Install uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
         with:
           version: "latest"
 
       - name: Install dependencies
-        working-directory: ./src
-        run: uv sync
+        run: uv sync --frozen --dev
 
-      - name: Run tests
-        working-directory: ./src
+      # ====================== Alembic Migration Steps ======================
+      - name: Apply Database Migrations
         env:
           ENV: TEST
-          DB_URL: ${{ secrets.DB_URL }}
+          TEST_DB_USER: testuser
+          TEST_DB_PASSWORD: testpass
+          TEST_DB_HOST: localhost
+          TEST_DB_PORT: 5432
+          TEST_DB_NAME: testdb
+        run: uv run alembic upgrade head
+
+      # ====================== Run Tests ======================
+      - name: Run tests
+        env:
+          ENV: TEST
+          TEST_DB_USER: testuser
+          TEST_DB_PASSWORD: testpass
+          TEST_DB_HOST: localhost
+          TEST_DB_PORT: 5432
+          TEST_DB_NAME: testdb
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
-        run: uv run pytest -v
+        run: |
+          uv run pytest -v --cov=src --cov-report=xml
