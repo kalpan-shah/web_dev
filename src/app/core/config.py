@@ -19,16 +19,16 @@ class ENV(Enum):
 
 class Settings(BaseSettings):
     # 1. Base Settings
-    Environment: ENV
+    Environment: ENV = ENV.DEV
     APP_NAME: str = "My Todo App"
     API_V1_STR: str = "/api/v1"
 
     ALLOWED_ORIGINS: list[str] = ["http://localhost:3000"]
 
     # 2. Authentication Variables
-    JWT_SECRET_KEY: str
-    JWT_ALGORITHM: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int
+    JWT_SECRET_KEY: str 
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15 # 15 minutes
 
     # 3. Database
     DB_URL: str | None = None
@@ -71,7 +71,7 @@ class Settings(BaseSettings):
         if values.get("DB_URL"):
             return values
 
-        env = values.get("Environment")
+        env = values.get("Environment", "DEV")  # Default to DEV if not set
 
         # Handle both string and Enum (important in 'before' mode)
         if env in (ENV.DEV, "DEV", "dev"):
