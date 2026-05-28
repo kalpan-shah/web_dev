@@ -22,6 +22,10 @@ class Settings(BaseSettings):
     APP_NAME: str = "My Todo App"
     API_V1_STR: str = "/api/v1"
 
+    ALLOWED_ORIGINS: list[str] = [
+        "http://localhost:3000",
+    ]
+
     # 2. Authentication Variables
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str
