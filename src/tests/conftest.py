@@ -32,6 +32,37 @@ AsyncTestingSessionLocal = async_sessionmaker(
     expire_on_commit=False,  # Prevents session from expiring after commit
 )
 
+# Create a default test user
+test_user_data = { 
+    "email": "user_001@mailbox.com",
+    "password": "Random@123"
+}
+
+# Todo: add fixture to create a test user in the database before tests run, and clean up after tests finish.
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def setup_test_user():
+    """Creates a default test user before any tests run and cleans up after all tests finish."""
+    # Load the session
+    async with AsyncTestingSessionLocal() as session:
+        from app.schema.user import UserCreate 
+        from app.services import user_service
+        
+        test_user = UserCreate(
+            username=test_user_data["email"].split("@")[0],
+            email=test_user_data["email"],
+            password=test_user_data["password"]
+        )
+        # Create the user using the service layer (handles hashing, etc.)
+        await user_service.create_user(session, test_user)
+        print("Test user created")
+             
+    yield
+
+    # Cleanup after all tests (optional but recommended)
+    async with AsyncTestingSessionLocal() as session:
+        await user_service.delete_user_by_email(session, test_user_data["email"])
+        print("Test user cleaned up")
+
 @pytest_asyncio.fixture(scope="function")
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     """Provides an isolated transactional database session per test."""
@@ -72,11 +103,7 @@ async def client(db_session):
     # Clean up the override after the individual test finishes
     app.dependency_overrides.clear()
 
-# Create a default test user
-test_user_data = { 
-    "email": "user_001@mailbox.com",
-    "password": "Random@123"
-}
+
 
 
 @pytest_asyncio.fixture(scope="function")
