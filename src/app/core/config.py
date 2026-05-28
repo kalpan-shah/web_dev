@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: list[str] = ["http://localhost:3000"]
 
     # 2. Authentication Variables
-    JWT_SECRET_KEY: str = "supersecretkey"
+    JWT_SECRET_KEY: str = "super_secret_key_it_must_be_atleast_32_characters_long_for_security"
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15 # 15 minutes
 
