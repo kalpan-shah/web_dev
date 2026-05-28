@@ -37,10 +37,12 @@ jobs:
           version: "latest"
 
       - name: Install dependencies
+        working-directory: src
         run: uv sync --frozen --dev
 
       # ====================== Alembic Migration Steps ======================
       - name: Apply Database Migrations
+        working-directory: src
         env:
           ENV: TEST
           TEST_DB_USER: testuser
@@ -52,6 +54,7 @@ jobs:
 
       # ====================== Run Tests ======================
       - name: Run tests
+        working-directory: src
         env:
           ENV: TEST
           TEST_DB_USER: testuser
