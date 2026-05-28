@@ -44,7 +44,7 @@ jobs:
       - name: Apply Database Migrations
         working-directory: src
         env:
-          ENV: TEST
+          Environment: TEST
           TEST_DB_USER: testuser
           TEST_DB_PASSWORD: testpass
           TEST_DB_HOST: localhost
@@ -56,7 +56,7 @@ jobs:
       - name: Run tests
         working-directory: src
         env:
-          ENV: TEST
+          Environment: TEST
           TEST_DB_USER: testuser
           TEST_DB_PASSWORD: testpass
           TEST_DB_HOST: localhost
