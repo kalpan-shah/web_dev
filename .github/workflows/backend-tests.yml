@@ -15,13 +15,13 @@ jobs:
     steps:
       # step 1: Check out the code i.e. ghub to vm
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       
       # step 2: Setup Python environment
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.14'
+          python-version: '3.11'
 
       # step 3: Install dependencies
       - name: Install dependencies
