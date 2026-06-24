@@ -55,6 +55,7 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
+        str_strip_whitespace=True,
     )
 
     @model_validator(mode="before")
