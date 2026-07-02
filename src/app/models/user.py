@@ -28,8 +28,8 @@ class User(Base):
     lname: Mapped[str | None] = mapped_column(String)
     email: Mapped[str] = mapped_column(String, unique=True, index=True)
     hashed_pss: Mapped[str] = mapped_column(String)
-    created_at: Mapped[dt] = mapped_column(DateTime, server_default=func.now())
-    last_accessed: Mapped[dt | None] = mapped_column(DateTime, onupdate=func.now())
+    created_at: Mapped[dt] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    last_accessed: Mapped[dt] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
     def __repr__(self):
         return f"<User username={self.username} email={self.email}>"

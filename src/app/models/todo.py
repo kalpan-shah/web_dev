@@ -8,13 +8,14 @@
 """
 # Mapped - column type, mapped_column - constraints and options
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ARRAY, String, ForeignKey, DateTime, func # Importing necessary SQLAlchemy types
+from sqlalchemy import String, ForeignKey, DateTime, func # Importing necessary SQLAlchemy types
+from sqlalchemy import Enum as SQLEnum
 from datetime import datetime as dt
-from datetime import timezone
 from uuid import uuid4
 from sqlalchemy.dialects.postgresql import UUID # Importing UUID type for PostgreSQL
 
 from app.db.session import Base
+from app.core.enums import TodoStatus
 
 class Todo(Base):
     __tablename__ = "todos"
@@ -24,26 +25,27 @@ class Todo(Base):
         primary_key=True,
         default=uuid4  # Automatically generate a UUID for new todos
     )
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
-    title: Mapped[str] = mapped_column(String, nullable=True) # mark as optional
-    status: Mapped[str] = mapped_column(String, default="pending")  # Default status is 'pending', other states are 'completed', 'skipped', 'deleted'
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)  
+    # Foreign key to the user who owns the todo
+    title: Mapped[str] = mapped_column(String, nullable=False, default="")  # mark as optional
+    status: Mapped[TodoStatus] = mapped_column(
+        SQLEnum(TodoStatus, native_enum=False), 
+        default=TodoStatus.pending
+    )  # Todo State
     items: Mapped[list["TodoItems"]] = relationship(
         back_populates="todo", 
         cascade="all, delete-orphan",
         passive_deletes=True
     )  # List of TodoItems
-    # shall I apply a FK contraint for the above field or does it work
-    created_at: Mapped[dt] = mapped_column(DateTime, server_default=func.now())  # Automatically set the creation time
-    updated_at: Mapped[dt] = mapped_column(DateTime, nullable=True, onupdate=func.now())  # Automatically update the time on modification
-    skipped_at: Mapped[dt] = mapped_column(DateTime, nullable=True)  # Time when the todo was skipped
-    completed_at: Mapped[dt] = mapped_column(DateTime, nullable=True)  # Time when the todo was completed
+
+    created_at: Mapped[dt] = mapped_column(DateTime(timezone=True), server_default=func.now())  # Automatically set the creation time
+    updated_at: Mapped[dt] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())  # Automatically update the time on modification
+    skipped_at: Mapped[dt] = mapped_column(DateTime(timezone=True), nullable=True)  # Time when the todo was skipped
+    completed_at: Mapped[dt] = mapped_column(DateTime(timezone=True), nullable=True)  # Time when the todo was completed
     # marked for deletion, will be deleted after 7 days of last updated
 
     def __repr__(self):
-        if self.title is None:
-            item_snippet = self.items[0].item[:20] + "..." if self.items else "Empty"
-            return f"<Todo Item snippet={item_snippet}\n\n>{self.status}>"
-        return f"<Todo Title={self.title}\n\n>{self.status}>"
+        return f"<Todo Id={self.id}\n\n>{self.status}>"
 
 class TodoItems(Base):
     __tablename__ = "todo_items"
@@ -59,3 +61,5 @@ class TodoItems(Base):
 
     # Added for backward child to parent mapping
     todo: Mapped["Todo"] = relationship("Todo", back_populates="items")
+
+    # May Add created_at, updated_at, removed_at timestamps for each item if needed in the future

@@ -8,16 +8,19 @@
 """
 
 # Imports
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
-from uuid import UUID, uuid4
+from uuid import UUID
+
+from app.core.enums import TodoStatus
+
 
 # 1. TodoItems
 class TodoItemCreate(BaseModel):
     """
         Create a New Todo Item
     """
-    item: str
+    item: str = Field(min_length=1)
     is_checked: bool = False  # Default to unchecked
 
 class TodoItem(TodoItemCreate):
@@ -27,13 +30,17 @@ class TodoItem(TodoItemCreate):
     id: UUID
     todo_id: UUID
 
+    model_config = ConfigDict(from_attributes = True)
+
+
+
 
 # 2. Todo
 class TodoCreate(BaseModel):
     """
         Create a New Todo
     """
-    title: str | None = None  # optional
+    title: str = ""  # optional
     items: list[TodoItemCreate]  # List of TodoItemCreate objects
 
 
@@ -44,8 +51,12 @@ class Todo(TodoCreate):
     id: UUID
     user_id: UUID
     created_at: datetime
+    status: TodoStatus = TodoStatus.pending  # Default status must be 'pending'
     # overide
     items: list[TodoItem]  # List of TodoItem objects
+
+    model_config = ConfigDict(from_attributes = True)
+
 
 # 3. Update Todo items
 class TodoItemUpdate(BaseModel):
@@ -64,7 +75,7 @@ class TodoUpdate(BaseModel):
         Update an Existing Todo
     """
     title: str | None = None  # optional
-    status: str | None = None  
+    status: TodoStatus | None = None  
     # optional, must be one of 'pending', 'completed', 'skipped', 'deleted'
-    items: list[TodoItemCreate] | None = None  
+    items: list[TodoItemUpdate] | None = None  
     # optional, list of TodoItemCreate objects
