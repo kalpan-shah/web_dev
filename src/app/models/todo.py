@@ -2,7 +2,7 @@
 @file:          models/todo.py
 @description:   Todo Model Definition
 @date:          14 May 2026
-@last modified:   14 May 2026
+@last modified:   30 June 2026
 @author:        Kalpan Shah
 @version:       1.0.0
 """
