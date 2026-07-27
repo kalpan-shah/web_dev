@@ -65,8 +65,8 @@ class UnauthorizedException(BaseAppException):
     DEFAULT_DETAIL = "You do not have permission to perform this action."
 
 
-# region POST-RELATED EXCEPTIONS
+# region TODO-RELATED EXCEPTIONS
 
-class PostNotFoundException(BaseAppException):
+class TodoNotFoundException(BaseAppException):
     STATUS_CODE = status.HTTP_404_NOT_FOUND
-    DEFAULT_DETAIL = "Post not found."
+    DEFAULT_DETAIL = "Todo not found."

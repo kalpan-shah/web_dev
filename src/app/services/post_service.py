@@ -14,53 +14,57 @@ from uuid import uuid4, UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
-from app.models.post import Post
-from app.core.exceptions import UnauthorizedException, PostNotFoundException
-from app.schema.post import PostCreate
+from app.models.todo import TodoItems, Todo
+from app.core.exceptions import UnauthorizedException, TodoNotFoundException
+from app.schema.todo import TodoCreate
 
 # Init logger
-logger = logging.getLogger("posts")
+logger = logging.getLogger("todos")
 
 
-# creating post
-async def create_post(db: AsyncSession, data: PostCreate, user_id: UUID) -> Post:
-    post = Post(user_id=user_id, title=data.title, content=data.content)
-    db.add(post)
+# creating todo
+async def create_todo(db: AsyncSession, data: TodoCreate, user_id: UUID) -> Todo:
+    _items = [
+        TodoItems(item = item.item, is_checked=item.is_checked)
+        for item in data.items
+    ]
+    todo = Todo(user_id=user_id, title=data.title, items=_items)
+    db.add(todo)
     await db.commit()
-    await db.refresh(post)
-    logger.info(f"Created post")
-    logger.debug(post)
-    return post
+    await db.refresh(todo)
+    logger.info(f"Created Todo with ID: {todo.id} for user: {user_id}")
+    logger.debug(todo)
+    return todo
 
 
-async def get_posts(db: AsyncSession, user_id: UUID) -> List[Post]:
-    logger.debug(f"Retrieving posts")
-    _stmt = select(Post).where(Post.user_id == user_id)
+async def get_all_todo(db: AsyncSession, user_id: UUID) -> List[Todo]:
+    logger.debug(f"Retrieving todos for user: {user_id}")
+    _stmt = select(Todo).where(Todo.user_id == user_id)
     result = await db.execute(_stmt)
     return result.scalars().all()
 
 
-async def get_post(db: AsyncSession, post_id: UUID, user_id: UUID) -> Post | None:
-    _stmt = select(Post).where(Post.id == post_id)
+async def get_todo(db: AsyncSession, todo_id: UUID, user_id: UUID) -> Todo | None:
+    _stmt = select(Todo).where(Todo.id == todo_id)
     result = await db.execute(_stmt)
-    post = result.scalar_one_or_none()
-    if post is None:
-        raise PostNotFoundException()
+    todo = result.scalar_one_or_none()
+    if todo is None:
+        raise TodoNotFoundException()
 
-    if post.user_id != user_id:
-        logger.warning(f"Unauthorized delete attempt for post {post_id} by user {user_id}")
+    if todo.user_id != user_id:
+        logger.warning(f"Unauthorized delete attempt for todo {todo_id} by user {user_id}")
         raise UnauthorizedException()
 
-    return post
+    return todo
 
 
-async def delete_post(db: AsyncSession, post_id: UUID, user_id: UUID) -> bool:
-    await get_post(db, post_id, user_id)
-    # Above will not raise an exception if post exists with relevant access
-    _stmt = delete(Post).where(Post.id == post_id)
+async def delete_todo(db: AsyncSession, todo_id: UUID, user_id: UUID) -> bool:
+    await get_todo(db, todo_id, user_id)
+    # Above will not raise an exception if todo exists with relevant access
+    _stmt = delete(Todo).where(Todo.id == todo_id)
     result = await db.execute(_stmt)
     await db.commit()
     if result.rowcount == 0:
         return False
-    logger.info(f"Deleted post")
+    logger.info(f"Deleted todo {todo_id} for user {user_id}")
     return True
