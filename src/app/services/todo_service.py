@@ -1,7 +1,8 @@
 """
-@file:          services/post_service.py
-@description:   CRUD operations for posts
+@file:          services/todo_service.py
+@description:   CRUD operations for todos
 @date:          26 March 2026
+@last modified: 27 July 2026
 @author:        Kalpan Shah
 @version:       1.0.0
 """

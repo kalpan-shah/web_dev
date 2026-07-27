@@ -2,7 +2,7 @@
 @file:          api/v1/endpoints/posts.py
 @description:   API Endpoints for posts
 @date:          26 March 2026
-@last modified: 14 May 2026
+@last modified: 27 July 2026
 @author:        Kalpan Shah
 @version:       1.0.0
 """
@@ -13,40 +13,40 @@ from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import UserNotFoundException
 from app.db.session import get_db
-from app.schema.post import Post, PostCreate
+from app.schema.todo import Todo, TodoCreate, TodoItem, TodoItemCreate
 from app.models.user import User
 from app.auth.service import get_current_user
-from app.services import post_service
+from app.services import todo_service 
 
-post_router = APIRouter(prefix="/posts", tags=["Posts"])
+todo_router = APIRouter(prefix="/todo", tags=["Todo"])
 
 
-@post_router.post("/", response_model=Post)
-async def create_post(data: PostCreate, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
+@todo_router.post("/", response_model=Todo)
+async def create_todo(data: TodoCreate, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
     if not user:
         raise UserNotFoundException()
-    return await post_service.create_post(db, data, user.id)
+    return await todo_service.create_todo(db, data, user.id)
 
 
-@post_router.get("/", response_model=List[Post])
-async def list_posts(db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
+@todo_router.get("/", response_model=List[Todo])
+async def list_todos(db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
     if not user:
         raise UserNotFoundException()
-    return await post_service.get_posts(db, user.id)
+    return await todo_service.get_all_todo(db, user.id)
 
 
-@post_router.get("/{post_id}", response_model=Post)
-async def get_post(post_id: UUID, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
+@todo_router.get("/{todo_id}", response_model=Todo)
+async def get_todo(todo_id: UUID, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
     if not user:
         raise UserNotFoundException()
-    # check for post if None raise the relevant exception or return accordingly
-    return await post_service.get_post(db, post_id, user.id)
+    # check for todo if None raise the relevant exception or return accordingly
+    return await todo_service.get_todo(db, todo_id, user.id)
 
 
-@post_router.delete("/{post_id}", response_model=Post)
-async def remove_post(post_id: UUID, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
+@todo_router.delete("/{todo_id}", response_model=Todo)
+async def remove_todo(todo_id: UUID, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
     if not user:
         raise UserNotFoundException()
-    # check if post exists and remove
-    success = await post_service.delete_post(db, post_id, user.id)
+    # check if todo exists and remove
+    success = await todo_service.delete_todo(db, todo_id, user.id)
     return {"status": "deleted" if success else  "failed to delete"}
