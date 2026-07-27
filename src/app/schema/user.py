@@ -31,8 +31,7 @@ class UserResponse(UserBase):
     """
     id: UUID
     created_at: datetime
-    # last_accessed: datetime | None = None # Uncomment if you want to expose this too
-
+    last_accessed: datetime 
     model_config = ConfigDict(from_attributes = True)
 
 class UserLogin(BaseModel):

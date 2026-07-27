@@ -55,11 +55,17 @@ async def create_new_user(db: AsyncSession, user: UserCreate) -> User:
         email=user.email,
         hashed_pss=hashed_pss
     )
-    db.add(new_user)
-    await db.commit()
-    await db.refresh(new_user)
-    logger.debug("User Created")
-    return new_user
+    try:
+        db.add(new_user)
+        await db.commit()
+        await db.refresh(new_user)
+        logger.info(new_user.last_accessed)
+        logger.debug("User Created")
+        return new_user
+    except Exception as e:
+        logger.error(f"Error creating user: {e}")
+        # raise
+        return new_user
 
 async def delete_users(db: AsyncSession, user_ids: List[UUID]) -> int:
     _stmt = delete(User).where(User.id.in_(user_ids))

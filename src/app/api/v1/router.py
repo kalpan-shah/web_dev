@@ -1,11 +1,11 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints.posts import post_router
+from app.api.v1.endpoints.posts import todo_router
 from app.api.v1.endpoints.users import user_router
 
 api_router = APIRouter()
 
-# Add the posts
-api_router.include_router(post_router)
+# Add the todos
+api_router.include_router(todo_router)
 api_router.include_router(user_router)
 
 
