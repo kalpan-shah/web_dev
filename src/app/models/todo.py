@@ -55,7 +55,7 @@ class TodoItems(Base):
         primary_key=True,
         default=uuid4  # Automatically generate a UUID for new todo items
     ) 
-    todo_id: Mapped[UUID] = mapped_column(ForeignKey("todos.id"), ondelete="CASCADE", nullable=False)  # Foreign key to the parent todo
+    todo_id: Mapped[UUID] = mapped_column(ForeignKey("todos.id", ondelete="CASCADE"), nullable=False)  # Foreign key to the parent todo
     item: Mapped[str] = mapped_column(String, nullable=False)  # Each item is a string and cannot be null
     is_checked: Mapped[bool] = mapped_column(default=False)  # Default is unchecked
 

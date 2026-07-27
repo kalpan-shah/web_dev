@@ -12,7 +12,7 @@ from app.core.config import base_settings
 from app.db.session import Base
 
 # NOTE: Import the Model to make sure its Registed in the meta
-from app.models.post import Post
+from app.models.todo import Todo, TodoItems
 from app.models.user import User
 
 # this is the Alembic Config object, which provides

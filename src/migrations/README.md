@@ -16,7 +16,9 @@ Always log applied schema modifications in the ledger below.
 | :--- | :--- | :--- | :--- | :--- |
 | 2026-05-14 | `b97800b75bf8` | Initial schema setup (`Posts`) | Pending | Base migration file. |
 | 2026-05-15 | `b97800b75bf8` | Initial schema setup (`Posts`) | Up | Base migration Applied |
-| 2026-05-22 | `9cf743877585` | Added Users Table (`Posts`) | Up | User table added |
+| 2026-05-22 | `9cf743877585` | Added Users Table (`Users`) | Up | User table added |
+| 2026-05-22 | `0cf0fe4b7122` | Added User id Column to Table (`Posts`) | Up | User table added |
+| 2026-07-27 | `6b70e3a53fee` | Deleted Posts added Todo (`Posts`, `Users`, `Todo`, `TodoItems`) | Up | Todo table added |
 
 
 
