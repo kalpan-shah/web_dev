@@ -15,6 +15,7 @@ from uuid import uuid4, UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
+from sqlalchemy.orm import selectinload
 from app.models.todo import TodoItems, Todo
 from app.core.exceptions import UnauthorizedException, TodoNotFoundException
 from app.schema.todo import TodoCreate
@@ -46,7 +47,7 @@ async def get_all_todo(db: AsyncSession, user_id: UUID) -> List[Todo]:
 
 
 async def get_todo(db: AsyncSession, todo_id: UUID, user_id: UUID) -> Todo | None:
-    _stmt = select(Todo).where(Todo.id == todo_id)
+    _stmt = select(Todo).where(Todo.id == todo_id).options(selectinload(Todo.items))
     result = await db.execute(_stmt)
     todo = result.scalar_one_or_none()
     if todo is None:

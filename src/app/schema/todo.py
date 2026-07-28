@@ -23,7 +23,7 @@ class TodoItemCreate(BaseModel):
     item: str = Field(min_length=1)
     is_checked: bool = False  # Default to unchecked
 
-class TodoItem(TodoItemCreate):
+class TodoItemResponse(TodoItemCreate):
     """
         Todo Item Info Model
     """
@@ -44,16 +44,19 @@ class TodoCreate(BaseModel):
     items: list[TodoItemCreate]  # List of TodoItemCreate objects
 
 
-class Todo(TodoCreate):
+class TodoResponse(TodoCreate):
     """
         Todo Info Model
     """
     id: UUID
     user_id: UUID
     created_at: datetime
+    updated_at: datetime
+    skipped_at: datetime | None = None
+    completed_at: datetime | None = None
     status: TodoStatus = TodoStatus.pending  # Default status must be 'pending'
     # overide
-    items: list[TodoItem]  # List of TodoItem objects
+    items: list[TodoItemResponse]  # List of TodoItem objects
 
     model_config = ConfigDict(from_attributes = True)
 

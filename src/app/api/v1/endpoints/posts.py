@@ -13,7 +13,7 @@ from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import UserNotFoundException
 from app.db.session import get_db
-from app.schema.todo import Todo, TodoCreate, TodoItem, TodoItemCreate
+from app.schema.todo import TodoResponse, TodoCreate, TodoItemResponse, TodoItemCreate
 from app.models.user import User
 from app.auth.service import get_current_user
 from app.services import todo_service 
@@ -21,21 +21,25 @@ from app.services import todo_service
 todo_router = APIRouter(prefix="/todo", tags=["Todo"])
 
 
-@todo_router.post("/", response_model=Todo)
+@todo_router.post("/", response_model=TodoResponse)
 async def create_todo(data: TodoCreate, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
     if not user:
         raise UserNotFoundException()
-    return await todo_service.create_todo(db, data, user.id)
+    
+    _todo = await todo_service.create_todo(db, data, user.id)
+
+    return await todo_service.get_todo(db, _todo.id, user.id)
 
 
-@todo_router.get("/", response_model=List[Todo])
+
+@todo_router.get("/", response_model=List[TodoResponse])
 async def list_todos(db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
     if not user:
         raise UserNotFoundException()
     return await todo_service.get_all_todo(db, user.id)
 
 
-@todo_router.get("/{todo_id}", response_model=Todo)
+@todo_router.get("/{todo_id}", response_model=TodoResponse)
 async def get_todo(todo_id: UUID, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
     if not user:
         raise UserNotFoundException()
@@ -43,7 +47,7 @@ async def get_todo(todo_id: UUID, db: AsyncSession=Depends(get_db), user: User=D
     return await todo_service.get_todo(db, todo_id, user.id)
 
 
-@todo_router.delete("/{todo_id}", response_model=Todo)
+@todo_router.delete("/{todo_id}", response_model=TodoResponse)
 async def remove_todo(todo_id: UUID, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
     if not user:
         raise UserNotFoundException()
