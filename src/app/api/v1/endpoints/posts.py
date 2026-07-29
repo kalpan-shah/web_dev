@@ -47,7 +47,7 @@ async def get_todo(todo_id: UUID, db: AsyncSession=Depends(get_db), user: User=D
     return await todo_service.get_todo(db, todo_id, user.id)
 
 
-@todo_router.delete("/{todo_id}", response_model=TodoResponse)
+@todo_router.delete("/{todo_id}")
 async def remove_todo(todo_id: UUID, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
     if not user:
         raise UserNotFoundException()
