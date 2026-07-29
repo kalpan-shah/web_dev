@@ -13,7 +13,7 @@ from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import UserNotFoundException
 from app.db.session import get_db
-from app.schema.todo import TodoResponse, TodoCreate, TodoItemResponse, TodoItemCreate
+from app.schema.todo import TodoResponse, TodoCreate, TodoUpdate
 from app.models.user import User
 from app.auth.service import get_current_user
 from app.services import todo_service 
@@ -56,3 +56,10 @@ async def remove_todo(todo_id: UUID, db: AsyncSession=Depends(get_db), user: Use
     if not success:
         raise HTTPException(status_code=404, detail="Todo not found or could not be deleted")
     return
+
+@todo_router.patch("/{todo_id}", response_model=TodoResponse)
+async def update_todo(todo_id: UUID, data: TodoUpdate, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
+    if not user:
+        raise UserNotFoundException()
+    # check if todo exists and update
+    return await todo_service.update_todo(db, todo_id, user.id, data)

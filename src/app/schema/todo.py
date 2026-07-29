@@ -8,7 +8,7 @@
 """
 
 # Imports
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from datetime import datetime
 from uuid import UUID
 
@@ -72,6 +72,16 @@ class TodoItemUpdate(BaseModel):
     # Check how will you handle default value for new sub-task, 
     # if id is None, then is_checked should be False by default
 
+    @model_validator(mode="after")
+    def validate_new_items_def(self) -> self:
+        # if id is none, i.e. new sub-task
+        if self.id is None:
+            if not self.item:
+                raise ValueError("Item required")
+            self.is_checked = False if self.is_checked is None else self.is_checked
+
+        return self
+
 # 4. Update Todo
 class TodoUpdate(BaseModel):
     """
@@ -80,5 +90,4 @@ class TodoUpdate(BaseModel):
     title: str | None = None  # optional
     status: TodoStatus | None = None  
     # optional, must be one of 'pending', 'completed', 'skipped', 'deleted'
-    items: list[TodoItemUpdate] | None = None  
-    # optional, list of TodoItemCreate objects
+    items: list[TodoItemUpdate] | None = None  # optional, list of TodoItemUpdate objects

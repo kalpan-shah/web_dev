@@ -18,7 +18,7 @@ from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload
 from app.models.todo import TodoItems, Todo
 from app.core.exceptions import UnauthorizedException, TodoNotFoundException
-from app.schema.todo import TodoCreate
+from app.schema.todo import TodoCreate, TodoUpdate
 
 # Init logger
 logger = logging.getLogger("todos")
@@ -73,3 +73,44 @@ async def delete_todo(db: AsyncSession, todo_id: UUID, user_id: UUID) -> bool:
         return False
     logger.info(f"Deleted todo {todo_id} for user {user_id}")
     return True
+
+# Update
+
+def update_todo_items(todo: Todo, items: List[TodoItems]):
+    # create a quick map
+    existing_item_map = {item.id: item for item in todo.items}
+
+    # Update existing items and add new ones
+    for item_data in items:
+        if item_data.id is None:
+            # New item, add it
+            new_item = TodoItems(item=item_data.item, is_checked=item_data.is_checked)
+            todo.items.append(new_item)
+        elif item_data.id in existing_item_map:
+            # Existing item, update it
+            existing_item = existing_item_map[item_data.id]
+            if item_data.item is not None:
+                existing_item.item = item_data.item
+            if item_data.is_checked is not None:
+                existing_item.is_checked = item_data.is_checked
+        else:
+            logger.warning(f"Item with ID {item_data.id} not found in todo {todo.id}. Skipping update for this item.")
+
+        
+
+async def update_todo(db: AsyncSession, todo_id: UUID, user_id: UUID, data: TodoUpdate) -> Todo | None:
+    todo = await get_todo(db, todo_id, user_id)
+    if not todo:
+        raise TodoNotFoundException()
+
+    if data.title:
+        todo.title = data.title
+    if data.status:
+        todo.status = data.status
+    if data.items:
+        update_todo_items(todo, data.items)
+
+    await db.commit()
+    await db.refresh(todo)
+    logger.info(f"Updated todo {todo_id} for user {user_id}")
+    return todo
