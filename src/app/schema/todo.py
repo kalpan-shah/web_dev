@@ -2,7 +2,7 @@
 @file:          schema/todo.py
 @description:   for data validation - Data Contracts
 @date:          26 March 2026
-@last modified:   02 July 2026
+@last modified:   29 July 2026
 @author:        Kalpan Shah
 @version:       1.0.0
 """
