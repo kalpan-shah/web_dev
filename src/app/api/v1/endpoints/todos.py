@@ -7,7 +7,7 @@
 @version:       1.0.0
 """
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, status
 from uuid import UUID
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,10 +47,12 @@ async def get_todo(todo_id: UUID, db: AsyncSession=Depends(get_db), user: User=D
     return await todo_service.get_todo(db, todo_id, user.id)
 
 
-@todo_router.delete("/{todo_id}")
+@todo_router.delete("/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_todo(todo_id: UUID, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
     if not user:
         raise UserNotFoundException()
     # check if todo exists and remove
     success = await todo_service.delete_todo(db, todo_id, user.id)
-    return {"status": "deleted" if success else  "failed to delete"}
+    if not success:
+        raise HTTPException(status_code=404, detail="Todo not found or could not be deleted")
+    return

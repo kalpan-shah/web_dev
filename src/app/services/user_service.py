@@ -33,6 +33,7 @@ async def update_last_accessed(db: AsyncSession, user: User) -> None:
     user.last_accessed = dt.now(timezone.utc)
     db.add(user)
     await db.commit()
+    await db.refresh(user)
 
 # endregion
 

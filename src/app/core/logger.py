@@ -53,7 +53,7 @@ def setup_logging():
         # Seperate log file by service.
         file_handler.setFormatter(logging.Formatter(text_format))
         # make sure logs write debug level
-        service_logger.setLevel(logging.DEBUG)
+        # service_logger.setLevel(logging.DEBUG)
         service_logger.addHandler(file_handler)
 
     # create directory if not exists
@@ -61,6 +61,6 @@ def setup_logging():
         os.makedirs(os.path.join(os.getcwd(), 'logs'))
 
     # Initialize specific service files
-    add_service_file_handler("posts", "posts.log")
+    add_service_file_handler("todos", "todos.log")
     add_service_file_handler("users", "users.log")
     add_service_file_handler("auth", "auth.log")
