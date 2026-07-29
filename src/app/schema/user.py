@@ -2,6 +2,7 @@
 @file:          schema/user.py
 @description:   for data validation - Data Contracts
 @date:          18 May 2026
+@last modified:   29 July 2026
 @author:        Kalpan Shah
 @version:       1.0.0
 """
@@ -25,12 +26,23 @@ class UserCreate(UserBase):
     """
     password: str = Field(..., min_length=8)
 
+class UserUpdate(BaseModel):
+    """
+    Schema for validating incoming data when updating user information
+    """
+    username: str | None = Field(None, min_length=3, max_length=50)
+    email: EmailStr | None = None
+    fname: str | None = None
+    lname: str | None = None
+    password: str | None = Field(None, min_length=8)
+
 class UserResponse(UserBase):
     """
     Schema for outgoing user data (Data Contract for API Responses)
     """
     id: UUID
     created_at: datetime
+    updated_at: datetime
     last_accessed: datetime 
     model_config = ConfigDict(from_attributes = True)
 

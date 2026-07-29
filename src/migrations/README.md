@@ -20,9 +20,7 @@ Always log applied schema modifications in the ledger below.
 | 2026-05-22 | `0cf0fe4b7122` | Added User id Column to Table (`Posts`) | Up | User table added |
 | 2026-07-27 | `6b70e3a53fee` | Deleted Posts added Todo (`Posts`, `Users`, `Todo`, `TodoItems`) | Up | Todo table added |
 | 2026-07-27 | `1ac631b0884f` | Added Server Default for last_accessed (`Users`) | Up | User Table Updated |
-
-
-
+| 2026-07-29 | `d82c8fda7f57` | Removed onupdate for last_accessed, Added updated_at (`Users`) | Up | User Table Updated |
 
 
 ## Quick Reference Commands

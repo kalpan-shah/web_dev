@@ -2,7 +2,7 @@
 @file:          models/user.py
 @description:   User Model Definition
 @date:          18 May 2026
-@last modified:   18 May 2026
+@last modified:   29 July 2026
 @author:        Kalpan Shah
 @version:       1.0.0
 """
@@ -29,7 +29,8 @@ class User(Base):
     email: Mapped[str] = mapped_column(String, unique=True, index=True)
     hashed_pss: Mapped[str] = mapped_column(String)
     created_at: Mapped[dt] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    last_accessed: Mapped[dt] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    updated_at: Mapped[dt] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    last_accessed: Mapped[dt] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     def __repr__(self):
         return f"<User username={self.username} email={self.email}>"
