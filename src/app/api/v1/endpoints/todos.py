@@ -1,6 +1,6 @@
 """
-@file:          api/v1/endpoints/posts.py
-@description:   API Endpoints for posts
+@file:          api/v1/endpoints/todos.py
+@description:   API Endpoints for todos
 @date:          26 March 2026
 @last modified: 27 July 2026
 @author:        Kalpan Shah

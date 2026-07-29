@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints.posts import todo_router
+from app.api.v1.endpoints.todos import todo_router
 from app.api.v1.endpoints.users import user_router
 
 api_router = APIRouter()
