@@ -41,7 +41,10 @@ async def create_todo(db: AsyncSession, data: TodoCreate, user_id: UUID) -> Todo
 
 async def get_all_todo(db: AsyncSession, user_id: UUID) -> List[Todo]:
     logger.debug(f"Retrieving todos for user: {user_id}")
-    _stmt = select(Todo).where(Todo.user_id == user_id)
+    _stmt = select(Todo).where(
+        Todo.user_id == user_id).options(
+            selectinload(Todo.items)).order_by(
+                Todo.created_at.desc())
     result = await db.execute(_stmt)
     return result.scalars().all()
 
