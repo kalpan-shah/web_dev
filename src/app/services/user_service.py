@@ -6,6 +6,7 @@
 @version:       1.0.0
 """
 import logging
+from datetime import datetime as dt, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import EmailAlreadyExistsException, UsernameAlreadyExistsException
 from app.schema.user import UserCreate, UserBase
@@ -24,20 +25,42 @@ async def get_users(db: AsyncSession, offset: int=0, limit:int=10) -> List[User]
     result = await db.execute(_stmt)
     return result.scalars().all()
 
+# region get-user-by-xxx
+
+# region  helper function 
+
+async def update_last_accessed(db: AsyncSession, user: User) -> None:
+    user.last_accessed = dt.now(timezone.utc)
+    db.add(user)
+    await db.commit()
+
+# endregion
+
 async def get_user_by_email(db: AsyncSession, email: str) -> User | None:
     _stmt = select(User).where(User.email == email)
     result = await db.execute(_stmt)
-    return result.scalar_one_or_none()
+    user = result.scalar_one_or_none()
+    if user:
+        await update_last_accessed(db, user)
+    return user
 
 async def get_user_by_username(db: AsyncSession, username: str) -> User | None:
     _stmt = select(User).where(User.username == username)
     result = await db.execute(_stmt)
-    return result.scalar_one_or_none()
+    user = result.scalar_one_or_none()
+    if user:
+        await update_last_accessed(db, user)
+    return user
 
 async def get_user_by_id(db: AsyncSession, uid: UUID) -> User | None:
     _stmt = select(User).where(User.id == uid)
     result = await db.execute(_stmt)
-    return result.scalar_one_or_none()
+    user = result.scalar_one_or_none()
+    if user:
+        await update_last_accessed(db, user)
+    return user
+
+# endregion get-user-by-xxx
 
 async def create_new_user(db: AsyncSession, user: UserCreate) -> User:
     # check if user already exists by passing the username or email
