@@ -17,6 +17,7 @@ dependencies = [
     "pwdlib[argon2]>=0.3.0",
     "pyjwt[crypto]>=2.12.1",
     "pytest-cov>=7.1.0",
+    "locust>=2.46.2",
 ]
 
 [tool.pytest.ini_options]
