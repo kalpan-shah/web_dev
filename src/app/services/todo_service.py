@@ -18,7 +18,8 @@ from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload
 from app.models.todo import TodoItems, Todo
 from app.core.exceptions import UnauthorizedException, TodoNotFoundException
-from app.schema.todo import TodoCreate, TodoUpdate
+from app.schema.todo import TodoCreate, TodoUpdate, TodoItemUpdate
+
 
 # Init logger
 logger = logging.getLogger("todos")
@@ -76,7 +77,7 @@ async def delete_todo(db: AsyncSession, todo_id: UUID, user_id: UUID) -> bool:
 
 # Update
 
-def update_todo_items(todo: Todo, items: List[TodoItems]):
+def update_todo_items(todo: Todo, items: List[TodoItemUpdate]):
     # create a quick map
     existing_item_map = {item.id: item for item in todo.items}
 
@@ -111,6 +112,6 @@ async def update_todo(db: AsyncSession, todo_id: UUID, user_id: UUID, data: Todo
         update_todo_items(todo, data.items)
 
     await db.commit()
-    await db.refresh(todo)
     logger.info(f"Updated todo {todo_id} for user {user_id}")
-    return todo
+    return await get_todo(db, todo_id, user_id)
+
