@@ -6,7 +6,7 @@
 @author:        Kalpan Shah
 @version:       1.0.0
 """
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Text, DateTime, func # Importing necessary SQLAlchemy types
 from datetime import datetime as dt
 from datetime import timezone
@@ -14,6 +14,7 @@ from uuid import uuid4
 from sqlalchemy.dialects.postgresql import UUID # Importing UUID type for PostgreSQL
 
 from app.db.session import Base
+from app.models.todo import Todo
 
 class User(Base):
     __tablename__ = "users"
@@ -31,6 +32,13 @@ class User(Base):
     created_at: Mapped[dt] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[dt] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     last_accessed: Mapped[dt] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    todos: Mapped[list["Todo"]] = relationship(
+        "Todo", 
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True  # Prevents SQLAlchemy from fetching child items into memory before deletion
+    )
 
     def __repr__(self):
         return f"<User username={self.username} email={self.email}>"

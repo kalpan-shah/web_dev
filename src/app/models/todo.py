@@ -25,7 +25,7 @@ class Todo(Base):
         primary_key=True,
         default=uuid4  # Automatically generate a UUID for new todos
     )
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)  
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)  
     # Foreign key to the user who owns the todo
     title: Mapped[str] = mapped_column(String, nullable=False, default="")  # mark as optional
     status: Mapped[TodoStatus] = mapped_column(
