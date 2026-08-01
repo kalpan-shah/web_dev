@@ -34,8 +34,9 @@ class User(Base):
     last_accessed: Mapped[dt] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     todos: Mapped[list["Todo"]] = relationship(
-        "Todo", 
-        back_populates="user",
+        "Todo",
+        # lambda: Todo, 
+        # back_populates="user",
         cascade="all, delete-orphan",
         passive_deletes=True  # Prevents SQLAlchemy from fetching child items into memory before deletion
     )
