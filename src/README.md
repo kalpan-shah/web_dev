@@ -21,3 +21,14 @@ Last Updated: May 14, 2026
 
 `pg_dump -Fc -v -d "SOURCE_DB_CONN_STRING" | pg_restore -v --no-owner --no-privileges -d "TARGET_DB_CONN_STRING"
 `
+
+### Load Testing 
+`uv run locust -f ./tests/load/locustfile.py --headless -u 50 -r 5 -t 2m -H http://127.0.0.1:8000`
+
+**Command Flags:**
+- `-f`: Path to locust file (`./tests/load/locustfile.py`)
+- `--headless`: Run in CLI mode without web UI
+- `-u`: Number of concurrent users (`50`)
+- `-r`: Spawn rate / users per second (`5`)
+- `-t`: Test duration (`2m`)
+- `-H`: Target host URL (`http://127.0.0.1:8000`)
