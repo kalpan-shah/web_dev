@@ -12,6 +12,7 @@ from uuid import UUID
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import UserNotFoundException
+from app.core.metrics import USER_LOGINS, USER_REGISTRATIONS, RequestTimer
 from app.db.session import get_db
 from app.models.user import User
 from app.schema.user import UserResponse, UserCreate, UserLogin
@@ -34,8 +35,14 @@ user_router = APIRouter(prefix="/users", tags=["Users"])
 
 @user_router.post("/", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register_user(data: UserCreate, db: AsyncSession=Depends(get_db)):
-     
-    return await user_service.create_new_user(db, data)
+    method = "POST"
+    endpoint = "/users"
+    with RequestTimer(method=method, endpoint=endpoint):
+        new_user = await user_service.create_new_user(db, data)
+        if new_user:
+            USER_REGISTRATIONS.inc()
+
+        return new_user
 
 @user_router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_user(user_id: UUID, db: AsyncSession=Depends(get_db), user: User=Depends(get_current_user)):
@@ -67,5 +74,11 @@ async def get_user(user_id: UUID, db: AsyncSession=Depends(get_db), user: User=D
 
 @user_router.post("/token")
 async def get_access_token(user_creds: UserLogin, db: AsyncSession=Depends(get_db)):
-
-    return { "access_token": await generate_access_token(db, user_creds) }
+    method = "POST"
+    endpoint = "/users/token"
+    with RequestTimer(method=method, endpoint=endpoint):
+        token = await generate_access_token(db, user_creds)
+        if token:
+            USER_LOGINS.labels(status="success").inc()
+        # TODO: Add status="failure" on failed login
+        return { "access_token": token }
