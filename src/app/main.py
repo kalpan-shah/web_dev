@@ -1,6 +1,8 @@
 # Imports
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
+from prometheus_client import Counter, Histogram
+from prometheus_fastapi_instrumentator import Instrumentator
 from app.api.v1.router import api_router
 from app.core.logger import setup_logging
 from app.core.config import base_settings
@@ -26,6 +28,9 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # Prometheus metrics
+    Instrumentator().instrument(_app).expose(_app, endpoint="/metrics")
 
     _app.include_router(api_router, prefix=base_settings.API_V1_STR)
 
