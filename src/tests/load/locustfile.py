@@ -14,11 +14,11 @@ from locust import HttpUser, task, between
 class TodoUser(HttpUser):
     wait_time = between(0.01, 3)
     token = None
-    created_todo_ids = []
 
     def on_start(self):
         """Executed when a Locust user starts. Registers & logs in to obtain JWT token."""
         unique_id = str(uuid.uuid4())[:8]
+        self.created_todo_ids = []
         self.email = f"load_user_{unique_id}@example.com"
         self.password = "Password@123"
         self.name = f"LoadUser {unique_id}"
@@ -90,7 +90,7 @@ class TodoUser(HttpUser):
                 {"item": "Updated Task item 2", "is_checked": False}
             ]
         }
-        self.client.patch(f"/api/v1/todo/{todo_id}/items", json=patch_payload)
+        self.client.patch(f"/api/v1/todo/{todo_id}", json=patch_payload)
 
     @task(3)
     def update_existing_todo_item(self):
@@ -117,7 +117,7 @@ class TodoUser(HttpUser):
                 }
             ]
         }
-        self.client.patch(f"/api/v1/todo/{todo_id}/items/{item_id}", json=patch_payload)
+        self.client.patch(f"/api/v1/todo/{todo_id}", json=patch_payload)
 
     @task(1)
     def delete_todo(self):
