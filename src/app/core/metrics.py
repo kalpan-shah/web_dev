@@ -50,6 +50,13 @@ TODO_DELETED = Counter(
 )
 
 
+# TODO: Remove the RequestTimer and its refrences from the codebase 
+# and use a middleware to record metrics for all endpoints. 
+# This will ensure that metrics are recorded consistently across all
+# endpoints without needing to wrap each endpoint in a RequestTimer context manager. 
+# The middleware can automatically capture the method, endpoint, and status code 
+# for each request and update the appropriate counters and histograms accordingly.
+# In short just simplify it
 # Helper function to record metrics
 class RequestTimer:
     def __init__(self, method: str, endpoint: str):

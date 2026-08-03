@@ -32,7 +32,8 @@ async def create_todo(data: TodoCreate, db: AsyncSession=Depends(get_db), user: 
     with RequestTimer(method="POST", endpoint="/todos"):
         _todo = await todo_service.create_todo(db, data, user.id)
         TODO_CREATED.inc()
-        return _todo
+        return await todo_service.get_todo(db, _todo.id, user.id)
+
 
 
 @todo_router.get("/", response_model=List[TodoResponse])
