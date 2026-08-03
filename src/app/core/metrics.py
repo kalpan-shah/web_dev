@@ -23,14 +23,30 @@ USER_LOGINS = Counter(
 )
 
 # Todo metrics
-TODOS_CREATED = Counter(
+TODO_CREATED = Counter(
     "todos_created_total",
     "Total number of todos created"
 )
 
-TODOS_COMPLETED = Counter(
+TODO_COMPLETED = Counter(
     "todos_completed_total",
     "Total number of todos marked completed"
+)
+
+TODO_UPDATED = Counter(
+    "todos_updated_total",
+    "Total number of todos updated"
+)
+
+TODO_FETCHED = Counter(
+    "todos_fetched_total",
+    "Total number of todos fetched"
+)
+
+TODO_DELETED = Counter(
+    "todos_deleted_total",
+    "Total number of todos deleted",
+    labelnames=["status"]
 )
 
 
