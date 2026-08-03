@@ -4,6 +4,9 @@ FROM debian:bookworm-slim
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
+# install postgre client
+RUN apt-get update && apt-get install -y postgresql-client
+
 # Set up environment variables so uv installs Python automatically
 ENV UV_PYTHON_PREFERENCE=only-managed \
     PYTHONUNBUFFERED=1

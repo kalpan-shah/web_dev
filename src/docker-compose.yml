@@ -1,6 +1,7 @@
 services:
   web:
-    build: .
+    # build: .
+    image: todo-app:latest
     container_name: todo_app
     ports:
       - "8000:8000"
@@ -8,15 +9,15 @@ services:
       - todo_network 
     env_file:
       - .env
-    command: >
-      sh -c "
-      echo 'Waiting for remote database...';
-      until pg_isready -h $$DB_HOST -p $$DB_PORT -U $$DB_USER; do
-        sleep 1;
-      done;
-      echo 'Database is ready! Starting application...';
-      npm start
-      "
+    # command: >
+    #   sh -c "
+    #   echo 'Waiting for remote database...';
+    #   until pg_isready -h $$LOCAL_DB_HOST -p $$LOCAL_DB_PORT -U $$LOCAL_DB_USER; do
+    #     sleep 1;
+    #   done;
+    #   echo 'Database is ready! Starting application...';
+    #   uv run app.main:app --host 0.0.0.0 --port 8000
+    #   "
 
   prometheus:
     image: prom/prometheus:latest
