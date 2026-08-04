@@ -49,6 +49,8 @@ services:
 
   jaeger:
     image: jaegertracing/all-in-one:latest
+    networks:
+      - todo_network
     ports:
       - "16686:16686" # Jaeger UI
     #   - "4317:4317"  # OTLP gRPC receiver (if bypassing collector)
@@ -66,10 +68,12 @@ services:
     volumes:
       - ./infra/monitoring/otel-config.yaml:/etc/otelcol/config.yaml
     ports:
-      - "4318:4318" # OTLP HTTP receiver (for your apps)
+      - "4318:4318" # OTLP HTTP receiver
+      - "4317:4317" # OTLP gRPC receiver
     depends_on:
       - jaeger
-
+    networks:
+      - todo_network
 
 networks:
   todo_network:
