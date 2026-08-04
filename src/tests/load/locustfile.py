@@ -11,6 +11,11 @@ import uuid
 import random
 from locust import HttpUser, task, between
 
+# TODO: Remove todo_ids on failure 404, 403 - likely user deleted
+#  or todo's removed whatever
+
+# TODO: Add Client side telemetry to track response times, failures, and other metrics for better analysis.
+
 class TodoUser(HttpUser):
     wait_time = between(0.01, 3)
     token = None
@@ -31,8 +36,10 @@ class TodoUser(HttpUser):
         })
 
         if reg_resp.status_code not in (200, 201):
-            # Fallback in case user exists
-            pass
+            # TODO: Fallback in case user exists
+            return
+
+        self.user_id = reg_resp.json().get("id")
 
         # 2. Acquire access token
         token_resp = self.client.post("/api/v1/users/token", json={
@@ -128,7 +135,6 @@ class TodoUser(HttpUser):
         self.client.delete(f"/api/v1/todo/{todo_id}")
 
     def on_stop(self):
-        """Delete all created todos for this user."""
-        for todo_id in self.created_todo_ids:
-            self.client.delete(f"/api/v1/todo/{todo_id}")
+        """Delete the user and it will cascade delete all todos and items."""
+        self.client.delete(f"/api/v1/users/{self.user_id}")
         self.created_todo_ids.clear()
