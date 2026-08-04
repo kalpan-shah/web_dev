@@ -47,6 +47,30 @@ services:
     depends_on:
       - prometheus
 
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686" # Jaeger UI
+    #   - "4317:4317"  # OTLP gRPC receiver (if bypassing collector)
+    
+    # environment:
+    #   - SPAN_STORAGE_TYPE=badger # Changes storage from memory to Badger
+    #   - BADGER_DIRECTORY_VALUE=/badger/data
+    #   - BADGER_EPHEMERAL=false
+    # volumes:
+    #   - jaeger-data:/badger/data # Attaching volume for persistence
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./infra/monitoring/otel-config.yaml:/etc/otelcol/config.yaml
+    ports:
+      - "4318:4318" # OTLP HTTP receiver (for your apps)
+    depends_on:
+      - jaeger
+
+
 networks:
   todo_network:
     driver: bridge
@@ -54,4 +78,5 @@ networks:
 volumes:
   prometheus-data:
   grafana-storage:
+  # jaeger-data:
   
