@@ -49,6 +49,7 @@ services:
 
   jaeger:
     image: jaegertracing/all-in-one:latest
+    container_name: jaeger
     networks:
       - todo_network
     ports:
@@ -62,8 +63,38 @@ services:
     # volumes:
     #   - jaeger-data:/badger/data # Attaching volume for persistence
 
-  otel-collector:
+  locust-master:
+    image: locustio/locust:latest
+    container_name: locust-master
+    ports:
+      - "8089:8089"
+      - "5557:5557"
+      - "5558:5558"
+    networks:
+      - todo_network
+    command: -f /mnt/locust/locustfile.py -H http://192.168.6.224:8000 --master --master-bind-host=0.0.0.0
+    # running the workers as below manually
+    # uv run locust -f ./tests/load/locustfile.py --worker --master-host 192.168.6.224 --master-port 5557 
+    # TODO: Add a docker compose file in the load to spin up n required workers for locust load testing
+    volumes:
+      - ./tests/load/:/mnt/locust
+    depends_on:
+      - web
+
+  web-locust-exporter:
+    image:  containersol/locust_exporter:latest
+    container_name: web-locust-exporter
+    ports:
+      - "9646:9646"
+    networks:
+      - todo_network
+    command: --locust.uri=http://locust-master:8089
+    depends_on:
+      - locust-master
+
+  web-otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
+    container_name: web-otel-collector
     command: ["--config=/etc/otelcol/config.yaml"]
     volumes:
       - ./infra/monitoring/otel-config.yaml:/etc/otelcol/config.yaml
