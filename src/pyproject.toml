@@ -19,6 +19,9 @@ dependencies = [
     "pytest-cov>=7.1.0",
     "locust[otel]>=2.46.2",
     "prometheus-fastapi-instrumentator>=8.1.0",
+    "opentelemetry-exporter-otlp>=1.44.0",
+    "opentelemetry-instrumentation-fastapi>=0.65b0",
+    "opentelemetry-sdk>=1.44.0",
 ]
 
 [tool.pytest.ini_options]

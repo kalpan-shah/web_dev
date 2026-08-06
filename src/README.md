@@ -23,6 +23,7 @@ Last Updated: May 14, 2026
 `
 
 ### Load Testing 
+1. Independent headless
 `uv run locust -f ./tests/load/locustfile.py --headless -u 50 -r 5 -t 2m -H http://127.0.0.1:8000`
 
 **Command Flags:**
@@ -32,3 +33,11 @@ Last Updated: May 14, 2026
 - `-r`: Spawn rate / users per second (`5`)
 - `-t`: Test duration (`2m`)
 - `-H`: Target host URL (`http://127.0.0.1:8000`)
+
+2. Ft. Locust master
+Given the locust master is running with docker
+
+`uv run locust -f ./tests/load/locustfile.py`--worker --master-host <HOST>
+
+# TODO: Update with the url's for graphana, prometheus, jaegar 
+#   Locust-exporter, master and worker configurations 
