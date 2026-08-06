@@ -9,8 +9,25 @@ from app.core.config import base_settings
 from app.db.session import engine
 from fastapi.middleware.cors import CORSMiddleware
 
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+
 # Initialize the logging config
 setup_logging()
+
+# Initialize OpenTelemetry
+trace.set_tracer_provider(TracerProvider(
+    resource=Resource.create({
+        "service.name": base_settings.APP_NAME
+    })
+))
+trace.get_tracer_provider().add_span_processor(
+    BatchSpanProcessor(OTLPSpanExporter())
+)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -31,6 +48,10 @@ def create_app() -> FastAPI:
 
     # Prometheus metrics
     Instrumentator().instrument(_app).expose(_app, endpoint="/metrics")
+
+    # OpenTelemetry instrumentation
+    FastAPIInstrumentor.instrument_app(_app)
+
 
     _app.include_router(api_router, prefix=base_settings.API_V1_STR)
 
