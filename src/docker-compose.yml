@@ -44,8 +44,19 @@ services:
 
     volumes:
       - grafana-storage:/var/lib/grafana
+      - ./infra/monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
     depends_on:
       - prometheus
+      - loki
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - todo_network
 
   jaeger:
     image: jaegertracing/all-in-one:latest
@@ -103,6 +114,7 @@ services:
       - "4317:4317" # OTLP gRPC receiver
     depends_on:
       - jaeger
+      - loki
     networks:
       - todo_network
 

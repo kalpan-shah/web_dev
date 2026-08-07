@@ -45,7 +45,28 @@ def setup_logging():
     console_handler.setFormatter(json_formatter)
     root_logger.addHandler(console_handler)
 
-    # 3. Specific Service Configuration Helper
+    # 3. OpenTelemetry OTLP Log Handler
+    try:
+        from opentelemetry._logs import set_logger_provider
+        from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+        from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
+        from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
+        from opentelemetry.sdk.resources import Resource
+
+        logger_provider = LoggerProvider(
+            resource=Resource.create({"service.name": base_settings.APP_NAME})
+        )
+        set_logger_provider(logger_provider)
+
+        otlp_log_exporter = OTLPLogExporter()
+        logger_provider.add_log_record_processor(BatchLogRecordProcessor(otlp_log_exporter))
+
+        otel_handler = LoggingHandler(level=logging.NOTSET, logger_provider=logger_provider)
+        root_logger.addHandler(otel_handler)
+    except Exception as e:
+        root_logger.warning(f"Failed to setup OpenTelemetry log handler: {e}")
+
+    # 4. Specific Service Configuration Helper
     def add_service_file_handler(service_name: str, filename: str):
         # Note: Temperary file handler - Remove once log aggregator is up
         service_logger = logging.getLogger(service_name)

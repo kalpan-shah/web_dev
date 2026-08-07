@@ -37,7 +37,22 @@ Last Updated: May 14, 2026
 2. Ft. Locust master
 Given the locust master is running with docker
 
-`uv run locust -f ./tests/load/locustfile.py`--worker --master-host <HOST>
+### Monitoring & Observability
+For complete architecture and configuration details, see [`infra/monitoring/README.md`](./infra/monitoring/README.md).
 
-# TODO: Update with the url's for graphana, prometheus, jaegar 
-#   Locust-exporter, master and worker configurations 
+| Service | Endpoint / Port | Description |
+| :--- | :--- | :--- |
+| **Grafana** | [http://localhost:3000](http://localhost:3000) | Dashboards for Metrics & Logs (Loki) (User/Pass: `admin`/`admin`) |
+| **Prometheus** | [http://localhost:9090](http://localhost:9090) | Metrics scraper & database |
+| **Jaeger UI** | [http://localhost:16686](http://localhost:16686) | Distributed tracing UI |
+| **Loki** | [http://localhost:3100](http://localhost:3100) | Log aggregation backend |
+| **Locust Master** | [http://localhost:8089](http://localhost:8089) | Load testing dashboard |
+
+#### Quick Start Monitoring:
+```bash
+docker compose up -d --build
+```
+Query logs in Grafana Explore using LogQL:
+```logql
+{service_name="todo-app"}
+``` 
