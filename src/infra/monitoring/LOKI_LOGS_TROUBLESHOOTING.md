@@ -192,3 +192,23 @@ curl -G -s "http://localhost:3100/loki/api/v1/query_range" \
 | **Collector Exporter** | `otlphttp/loki` (`http://loki:3100/otlp`) | ✅ Updated & Verified |
 | **Grafana Provisioning** | Datasource `Loki` -> `http://loki:3100` | ✅ Verified |
 | **End-to-End Delivery** | FastAPI -> OTel Collector -> Loki -> Grafana Explore | ✅ Verified |
+
+
+
+## TODO — Observability Cleanup & Diagnosis
+
+- [ ] Segregate observability signals:
+  - [ ] Application logs
+  - [ ] FastAPI/Uvicorn logs
+  - [ ] SQLAlchemy/database logs
+  - [ ] OpenTelemetry/collector logs
+  - [ ] Application vs infrastructure metrics
+
+- [ ] Configure appropriate logging levels per component.
+- [ ] Remove/reduce unnecessary telemetry noise.
+- [ ] Learn Loki queries and filtering by service, level, endpoint, and trace/request ID.
+- [ ] Learn Jaeger trace navigation and identify expensive spans.
+- [ ] Correlate Metrics → Traces → Logs for a single incident.
+- [ ] Perform one complete diagnosis of a Locust-induced performance issue.
+- [ ] Document the investigation workflow and findings.
+
