@@ -20,7 +20,7 @@ class ENV(Enum):
 class Settings(BaseSettings):
     # 1. Base Settings
     Environment: ENV = ENV.DEV
-    APP_NAME: str = "My Todo App"
+    APP_NAME: str = "todo-app"
     API_V1_STR: str = "/api/v1"
 
     ALLOWED_ORIGINS: list[str] = ["http://localhost:3000"]

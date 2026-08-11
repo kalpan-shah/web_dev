@@ -3,11 +3,16 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from prometheus_client import Counter, Histogram
 from prometheus_fastapi_instrumentator import Instrumentator
-from app.api.v1.router import api_router
 from app.core.logger import setup_logging
+
+# Initialize the logging config
+setup_logging()
+
+from app.api.v1.router import api_router
 from app.core.config import base_settings
 from app.db.session import engine
 from fastapi.middleware.cors import CORSMiddleware
+
 
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
@@ -16,8 +21,6 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
-# Initialize the logging config
-setup_logging()
 
 # Initialize OpenTelemetry
 trace.set_tracer_provider(TracerProvider(

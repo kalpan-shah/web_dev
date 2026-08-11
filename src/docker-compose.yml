@@ -1,6 +1,6 @@
 services:
   web:
-    # build: .
+    build: .
     image: todo-app:latest
     container_name: todo_app
     ports:
