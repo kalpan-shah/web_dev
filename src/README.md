@@ -36,6 +36,9 @@ Last Updated: May 14, 2026
 
 2. Ft. Locust master
 Given the locust master is running with docker
+`locust -f ./tests/load/locustfile.py --worker --master-host <master-ip-address>`
+
+- `--master-host`: Optional Flag with Value to specify the master locust ip, skip if running on the same machine i.e. localhost
 
 ### Monitoring & Observability
 For complete architecture and configuration details, see [`infra/monitoring/README.md`](./infra/monitoring/README.md).
@@ -56,3 +59,7 @@ Query logs in Grafana Explore using LogQL:
 ```logql
 {service_name="todo-app"}
 ``` 
+
+```logql
+{service_name="todo-app"} | json | code_function_name = "update_todo"
+```
